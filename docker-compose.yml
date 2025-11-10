@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.1
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: Tele3210
+      KC_DB: dev-file
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+    ports:
+      - "8080:8080"
+    command: start-dev
+    networks:
+      - app-network
+
+  go-backend:
+    build: ./backend
+    container_name: go-backend
+    ports:
+      - "8081:8081"
+    environment:
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: master
+      KEYCLOAK_CLIENT_ID: go-backend
+      KEYCLOAK_CLIENT_SECRET: your-client-secret
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: Tele3210
+    depends_on:
+      - keycloak
+    networks:
+      - app-network
+
+  angular-frontend:
+    build: ./frontend
+    container_name: angular-frontend
+    ports:
+      - "4200:4200"
+    environment:
+      KEYCLOAK_URL: http://localhost:8080
+      KEYCLOAK_REALM: master
+      KEYCLOAK_CLIENT_ID: angular-frontend
+    depends_on:
+      - keycloak
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

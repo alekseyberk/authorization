@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Silent Check SSO</title>
+</head>
+<body>
+    <script>
+        // Этот файл используется для silent check SSO
+        // Keycloak будет загружать его в iframe для проверки аутентификации
+        parent.postMessage(location.href, location.origin);
+    </script>
+</body>
+</html>
